@@ -1,0 +1,2 @@
+D:\program\DxLibrary\ADVTest\ADVTest\Debug\ADVTest.exe
+D:\program\DxLibrary\ADVTest\ADVTest\Debug\ADVTest.pdb
