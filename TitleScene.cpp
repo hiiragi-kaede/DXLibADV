@@ -18,8 +18,13 @@ static int ScenarioSelectNum = 0;
 static const int WaitTimeMS = 150;
 static int StartTime = 0;
 
+static int state = 0;
+
 const int color_white = 0xffffff;
 const int color_yellow = 0xffd700;
+
+void title_update();
+void scenario_update();
 
 // プログラムは WinMain から始まります
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -29,15 +34,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;			// エラーが起きたら直ちに終了
 	}
 
+	SetDrawScreen(DX_SCREEN_BACK);
+
+	while (true) {
+		if (state == 0)	title_update();
+		else if (state == 1) scenario_update();
+	}
+
+	DxLib_End();				// ＤＸライブラリ使用の終了処理
+
+	return 0;				// ソフトの終了 
+}
+
+void title_update() {
 	std::ifstream ifs("test_data/test.json");
 	IStreamWrapper isw(ifs);
 	Document doc;
 	doc.ParseStream(isw);
 
-	SetDrawScreen(DX_SCREEN_BACK);
-
 	while (true) {
 		ClearDrawScreen();
+		DrawString(100, 50, "日本語が出力できるかテスト", color_white, TitleHandle);
 		DrawString(100, 100, TitleText, color_white, TitleHandle);
 		for (int i = 0; i < 3; i++) {
 			if (i == ScenarioSelectNum) {
@@ -50,14 +67,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		int cnt = 0;
 		for (auto itr = doc["test-data"].Begin(); itr != doc["test-data"].End(); itr++) {
-			std::string text{ (*itr)["name"].GetString()};
+			std::string text{ (*itr)["name"].GetString() };
 			text += "  score:";
 			text += std::to_string((*itr)["test-result"].GetInt());
 			DrawString(100, 250 + cnt * 20, text.c_str(), color_white, ScenarioSelectHandle);
 			cnt++;
 		}
 
-		if (CheckHitKey(KEY_INPUT_ESCAPE)) break;
+		if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+			DxLib_End();
+			exit(0);
+		}
 
 		if (GetNowCount() - StartTime > WaitTimeMS) {
 			if (CheckHitKey(KEY_INPUT_DOWN)) {
@@ -72,10 +92,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 		}
 
+		if (CheckHitKey(KEY_INPUT_SPACE)) {
+			state = 1;
+			return;
+		}
+
 		ScreenFlip();
 	}
+}
 
-	DxLib_End();				// ＤＸライブラリ使用の終了処理
+void scenario_update() {
+	std::ifstream ifs("test_data/mars.json");
+	IStreamWrapper isw(ifs);
+	Document doc;
+	doc.ParseStream(isw);
 
-	return 0;				// ソフトの終了 
+	for (auto itr = doc["contents"].Begin(); itr != doc["contents"].End(); itr++) {
+		ClearDrawScreen();
+		std::string text{ (*itr)["content"].GetString() };
+		DrawString(0, 250, text.c_str(), color_white, ScenarioSelectHandle);
+		ScreenFlip();
+
+		while (true) {
+			if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+				state = 0;
+				return;
+			}
+
+			if (GetNowCount() - StartTime > WaitTimeMS) {
+				if (CheckHitKey(KEY_INPUT_SPACE)) {
+					StartTime = GetNowCount();
+					break;
+				}
+			}
+		}
+	}
+
+	state = 0;
+	return;
 }
