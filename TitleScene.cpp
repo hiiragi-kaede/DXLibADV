@@ -1,14 +1,16 @@
-#include "DxLib.h"
 #include<fstream>
 #include<string>
+#include<Windows.h>
+#include "DxLib.h"
 #include"rapidjson/document.h"
 #include"rapidjson/istreamwrapper.h"
 
 using namespace rapidjson;
 
-const int TitleHandle = CreateFontToHandle(NULL, 50, 2);
-const int ScenarioSelectFontSize = 30;
-const int ScenarioSelectHandle = CreateFontToHandle(NULL, ScenarioSelectFontSize, 2);
+static int TitleHandle;
+const int ScenarioSelectFontSize = 25;
+static int ScenarioSelectHandle;
+static int ScenarioTextHandle;
 
 const char* TitleText = "ADV Test Title";
 const char* ScenariosTexts[3] = { "Scenario1", "Scenario2", "Scenario3" };
@@ -25,6 +27,9 @@ const int color_yellow = 0xffd700;
 
 void title_update();
 void scenario_update();
+std::string UTF8toSjis(std::string srcUTF8);
+void font_init();
+void font_finalize();
 
 // プログラムは WinMain から始まります
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -34,6 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;			// エラーが起きたら直ちに終了
 	}
 
+	font_init();
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	while (true) {
@@ -41,6 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		else if (state == 1) scenario_update();
 	}
 
+	font_finalize();
 	DxLib_End();				// ＤＸライブラリ使用の終了処理
 
 	return 0;				// ソフトの終了 
@@ -54,24 +61,14 @@ void title_update() {
 
 	while (true) {
 		ClearDrawScreen();
-		DrawString(100, 50, "日本語が出力できるかテスト", color_white, TitleHandle);
-		DrawString(100, 100, TitleText, color_white, TitleHandle);
+		DrawStringToHandle(100, 100, TitleText, color_white, TitleHandle);
 		for (int i = 0; i < 3; i++) {
 			if (i == ScenarioSelectNum) {
-				DrawString(100, 150 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_yellow, ScenarioSelectHandle);
+				DrawStringToHandle(100, 200 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_yellow, ScenarioSelectHandle);
 			}
 			else {
-				DrawString(100, 150 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_white, ScenarioSelectHandle);
+				DrawStringToHandle(100, 200 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_white, ScenarioSelectHandle);
 			}
-		}
-
-		int cnt = 0;
-		for (auto itr = doc["test-data"].Begin(); itr != doc["test-data"].End(); itr++) {
-			std::string text{ (*itr)["name"].GetString() };
-			text += "  score:";
-			text += std::to_string((*itr)["test-result"].GetInt());
-			DrawString(100, 250 + cnt * 20, text.c_str(), color_white, ScenarioSelectHandle);
-			cnt++;
 		}
 
 		if (CheckHitKey(KEY_INPUT_ESCAPE)) {
@@ -90,11 +87,11 @@ void title_update() {
 					ScenarioSelectNum + ScenarioSize : ScenarioSelectNum;
 				StartTime = GetNowCount();
 			}
-		}
 
-		if (CheckHitKey(KEY_INPUT_SPACE)) {
-			state = 1;
-			return;
+			if (CheckHitKey(KEY_INPUT_SPACE)) {
+				state = 1;
+				return;
+			}
 		}
 
 		ScreenFlip();
@@ -110,8 +107,11 @@ void scenario_update() {
 	for (auto itr = doc["contents"].Begin(); itr != doc["contents"].End(); itr++) {
 		ClearDrawScreen();
 		std::string text{ (*itr)["content"].GetString() };
-		DrawString(0, 250, text.c_str(), color_white, ScenarioSelectHandle);
+		text = UTF8toSjis(text);
+		DrawStringToHandle(0, 250, text.c_str(), color_white, ScenarioTextHandle);
 		ScreenFlip();
+		//最初のテキストが選択時の入力によってスキップされないようにする。
+		StartTime = GetNowCount();
 
 		while (true) {
 			if (CheckHitKey(KEY_INPUT_ESCAPE)) {
@@ -128,6 +128,48 @@ void scenario_update() {
 		}
 	}
 
-	state = 0;
+    state = 0;
+	StartTime = GetNowCount();
 	return;
+}
+
+//参照：https://namco.hatenablog.jp/entry/2019/01/06/122150
+std::string UTF8toSjis(std::string srcUTF8)
+{
+	//Unicodeへ変換後の文字列長を得る
+	int lenghtUnicode = MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, NULL, 0);
+
+	//必要な分だけUnicode文字列のバッファを確保
+	wchar_t* bufUnicode = new wchar_t[lenghtUnicode];
+
+	//UTF8からUnicodeへ変換
+	MultiByteToWideChar(CP_UTF8, 0, srcUTF8.c_str(), srcUTF8.size() + 1, bufUnicode, lenghtUnicode);
+
+	//ShiftJISへ変換後の文字列長を得る
+	int lengthSJis = WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, -1, NULL, 0, NULL, NULL);
+
+	//必要な分だけShiftJIS文字列のバッファを確保
+	char* bufShiftJis = new char[lengthSJis];
+
+	//UnicodeからShiftJISへ変換
+	WideCharToMultiByte(CP_THREAD_ACP, 0, bufUnicode, lenghtUnicode + 1, bufShiftJis, lengthSJis, NULL, NULL);
+
+	std::string strSJis(bufShiftJis);
+
+	delete[] bufUnicode;
+	delete[] bufShiftJis;
+
+	return strSJis;
+}
+
+void font_init() {
+	TitleHandle = CreateFontToHandle(NULL, 40, 2);
+	ScenarioSelectHandle = CreateFontToHandle(NULL, ScenarioSelectFontSize, 2);
+	ScenarioTextHandle = CreateFontToHandle(NULL, 14, 2);
+}
+
+void font_finalize() {
+	DeleteFontToHandle(TitleHandle);
+	DeleteFontToHandle(ScenarioSelectHandle);
+	DeleteFontToHandle(ScenarioTextHandle);
 }
