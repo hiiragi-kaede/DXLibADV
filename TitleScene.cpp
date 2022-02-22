@@ -99,7 +99,13 @@ void title_update() {
 }
 
 void scenario_update() {
-	std::ifstream ifs("test_data/mars.json");
+	std::ifstream ifs;
+	if (ScenarioSelectNum == 0) {
+		ifs=std::ifstream("test_data/mars.json");
+	}
+	else {
+		ifs= std::ifstream("test_data/yume_juya.json");
+	}
 	IStreamWrapper isw(ifs);
 	Document doc;
 	doc.ParseStream(isw);
