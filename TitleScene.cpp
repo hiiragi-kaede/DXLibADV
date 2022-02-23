@@ -18,7 +18,7 @@ const int ScenarioSize = 3;
 
 static int ScenarioSelectNum = 0;
 static const int WaitTimeMS = 150;
-static int StartTime = 0;
+static int StartTime = WaitTimeMS * 4;
 
 static int state = 0;
 
@@ -72,6 +72,7 @@ void title_update() {
 		}
 
 		if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+			font_finalize();
 			DxLib_End();
 			exit(0);
 		}
@@ -101,11 +102,15 @@ void title_update() {
 void scenario_update() {
 	std::ifstream ifs;
 	if (ScenarioSelectNum == 0) {
-		ifs=std::ifstream("test_data/mars.json");
+		ifs = std::ifstream("test_data/mars.json");
 	}
-	else {
-		ifs= std::ifstream("test_data/yume_juya.json");
+	else if (ScenarioSelectNum == 1) {
+		ifs = std::ifstream("test_data/yume_juya.json");
 	}
+	else if (ScenarioSelectNum == 2) {
+		ifs = std::ifstream("test_data/maihime.json");
+	}
+
 	IStreamWrapper isw(ifs);
 	Document doc;
 	doc.ParseStream(isw);
@@ -120,7 +125,7 @@ void scenario_update() {
 		StartTime = GetNowCount();
 
 		while (true) {
-			if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+			if (CheckHitKey(KEY_INPUT_B)) {
 				state = 0;
 				return;
 			}
