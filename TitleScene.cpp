@@ -26,7 +26,9 @@ static int state = 0;
 const int color_white = 0xffffff;
 const int color_yellow = 0xffd700;
 
-static const int ScenarioTextX = 5, ScenarioTextY = 350;
+static const int ScenarioTextX = 5, ScenarioTextY = 380;
+static const int ScenarioTriX = 580, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
+static const int TriWidth = 5, TriHeight = 10;
 
 void title_update();
 void scenario_update();
@@ -123,7 +125,9 @@ void scenario_update() {
 		std::string text{ (*itr)["content"].GetString() };
 		text = UTF8toSjis(text);
 
-		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 590, ScenarioTextY - 5 + ScenarioTextSize * 5, color_white, FALSE);
+		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 590, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
+		DrawTriangle(ScenarioTriX - TriWidth, ScenarioTriY, ScenarioTriX + TriWidth, ScenarioTriY,
+			ScenarioTriX, ScenarioTriY + TriHeight, color_white, TRUE);
 		DrawStringToHandle(ScenarioTextX, ScenarioTextY, text.c_str(), color_white, ScenarioTextHandle);
 		ScreenFlip();
 		//最初のテキストが選択時の入力によってスキップされないようにする。
