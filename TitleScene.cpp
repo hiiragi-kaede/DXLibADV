@@ -15,6 +15,7 @@ static int ScenarioTextHandle;
 const char* TitleText = "ADV Test Title";
 const char* ScenariosTexts[3] = { "Scenario1", "Scenario2", "Scenario3" };
 const int ScenarioSize = 3;
+const int ScenarioTextSize = 14;
 
 static int ScenarioSelectNum = 0;
 static const int WaitTimeMS = 150;
@@ -24,6 +25,8 @@ static int state = 0;
 
 const int color_white = 0xffffff;
 const int color_yellow = 0xffd700;
+
+static const int ScenarioTextX = 5, ScenarioTextY = 350;
 
 void title_update();
 void scenario_update();
@@ -119,12 +122,20 @@ void scenario_update() {
 		ClearDrawScreen();
 		std::string text{ (*itr)["content"].GetString() };
 		text = UTF8toSjis(text);
-		DrawStringToHandle(0, 250, text.c_str(), color_white, ScenarioTextHandle);
+
+		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 590, ScenarioTextY - 5 + ScenarioTextSize * 5, color_white, FALSE);
+		DrawStringToHandle(ScenarioTextX, ScenarioTextY, text.c_str(), color_white, ScenarioTextHandle);
 		ScreenFlip();
 		//最初のテキストが選択時の入力によってスキップされないようにする。
 		StartTime = GetNowCount();
 
 		while (true) {
+			if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+				font_finalize();
+				DxLib_End();
+				exit(0);
+			}
+
 			if (CheckHitKey(KEY_INPUT_B)) {
 				state = 0;
 				return;
@@ -176,7 +187,7 @@ std::string UTF8toSjis(std::string srcUTF8)
 void font_init() {
 	TitleHandle = CreateFontToHandle(NULL, 40, 2);
 	ScenarioSelectHandle = CreateFontToHandle(NULL, ScenarioSelectFontSize, 2);
-	ScenarioTextHandle = CreateFontToHandle(NULL, 14, 2);
+	ScenarioTextHandle = CreateFontToHandle(NULL, ScenarioTextSize, 2);
 }
 
 void font_finalize() {

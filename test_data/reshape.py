@@ -9,6 +9,8 @@ def line_break(text):
         insert_point=(cnt+1)*line_break_size+cnt
         ret=ret[:insert_point]+"\\n"+ret[insert_point:]
         cnt+=1
+    global max
+    if cnt>max: max=cnt
     return ret
     
 #input_file=input("加工前のファイル名を入力してください:")
@@ -32,3 +34,6 @@ for input_file in files:
             text=line_break(data[-1])
             print('\t\t{"content":"'+text+'"}',file=f_out)
             print('\t]\n}',file=f_out)
+
+#最大行数を表示
+print(max+1)
