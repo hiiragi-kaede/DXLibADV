@@ -1,6 +1,7 @@
 #include<fstream>
 #include<string>
 #include<Windows.h>
+#include"DxLibColor.hpp"
 #include "DxLib.h"
 #include"rapidjson/document.h"
 #include"rapidjson/istreamwrapper.h"
@@ -22,9 +23,6 @@ static const int WaitTimeMS = 150;
 static int StartTime = WaitTimeMS * 4;
 
 static int state = 0;
-
-const int color_white = 0xffffff;
-const int color_yellow = 0xffd700;
 
 static const int ScenarioTextX = 5, ScenarioTextY = 380;
 static const int ScenarioTriX = 580, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
