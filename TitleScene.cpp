@@ -9,14 +9,17 @@
 using namespace rapidjson;
 
 static int TitleHandle;
-const int ScenarioSelectFontSize = 25;
+const int ScenarioSelectFontSize = 40;
 static int ScenarioSelectHandle;
 static int ScenarioTextHandle;
 
 const char* TitleText = "ADV Test Title";
+const int TitleX = 300, TitleY = 100;
+
 const char* ScenariosTexts[3] = { "火星より遠い星", "夢十夜", "舞姫" };
 const int ScenarioSize = 3;
-const int ScenarioTextSize = 14;
+const int ScenarioTextSize = 30;
+const int ScenarioSelecetX = 350, ScenarioSelectY = 300;
 
 static int ScenarioSelectNum = 0;
 static const int WaitTimeMS = 150;
@@ -24,9 +27,9 @@ static int StartTime = WaitTimeMS * 4;
 
 static int state = 0;
 
-static const int ScenarioTextX = 5, ScenarioTextY = 380;
-static const int ScenarioTriX = 580, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
-static const int TriWidth = 5, TriHeight = 10;
+static const int ScenarioTextX = 5, ScenarioTextY = 500;
+static const int ScenarioTriX = 1220, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
+static const int TriWidth = 12, TriHeight = 10;
 
 void title_update();
 void scenario_update();
@@ -42,8 +45,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;			// エラーが起きたら直ちに終了
 	}
 
-	font_init();
 	SetDrawScreen(DX_SCREEN_BACK);
+	SetGraphMode(1280, 720, 32);
+	font_init();
 
 	while (true) {
 		if (state == 0)	title_update();
@@ -64,13 +68,13 @@ void title_update() {
 
 	while (true) {
 		ClearDrawScreen();
-		DrawStringToHandle(100, 100, TitleText, color_white, TitleHandle);
+		DrawStringToHandle(TitleX, TitleY, TitleText, color_white, TitleHandle);
 		for (int i = 0; i < 3; i++) {
 			if (i == ScenarioSelectNum) {
-				DrawStringToHandle(100, 200 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_yellow, ScenarioSelectHandle);
+				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenariosTexts[i], color_yellow, ScenarioSelectHandle);
 			}
 			else {
-				DrawStringToHandle(100, 200 + ScenarioSelectFontSize * i, ScenariosTexts[i], color_white, ScenarioSelectHandle);
+				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenariosTexts[i], color_white, ScenarioSelectHandle);
 			}
 		}
 
@@ -123,7 +127,7 @@ void scenario_update() {
 		std::string text{ (*itr)["content"].GetString() };
 		text = UTF8toSjis(text);
 
-		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 590, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
+		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 1270, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
 		DrawTriangle(ScenarioTriX - TriWidth, ScenarioTriY, ScenarioTriX + TriWidth, ScenarioTriY,
 			ScenarioTriX, ScenarioTriY + TriHeight, color_white, TRUE);
 		DrawStringToHandle(ScenarioTextX, ScenarioTextY, text.c_str(), color_white, ScenarioTextHandle);
@@ -158,7 +162,7 @@ void scenario_update() {
 }
 
 void font_init() {
-	TitleHandle = CreateFontToHandle(NULL, 40, 2);
+	TitleHandle = CreateFontToHandle(NULL, 80, 2);
 	ScenarioSelectHandle = CreateFontToHandle(NULL, ScenarioSelectFontSize, 2);
 	ScenarioTextHandle = CreateFontToHandle(NULL, ScenarioTextSize, 2);
 }
