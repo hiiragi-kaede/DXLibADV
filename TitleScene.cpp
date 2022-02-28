@@ -9,17 +9,18 @@
 using namespace rapidjson;
 
 static int TitleHandle;
-const int ScenarioSelectFontSize = 40;
+const int ScenarioSelectFontSize = 50;
 static int ScenarioSelectHandle;
 static int ScenarioTextHandle;
 
 const char* TitleText = "ADV Test Title";
-const int TitleX = 300, TitleY = 100;
+const int TitleX = 500, TitleY = 200;
+const int TitleFontSize = 120;
 
-const char* ScenariosTexts[3] = { "âŒêØÇÊÇËâìÇ¢êØ", "ñ≤è\ñÈ", "ïëïP" };
+const char* ScenarioTitles[3] = { "âŒêØÇÊÇËâìÇ¢êØ", "ñ≤è\ñÈ", "ïëïP" };
 const int ScenarioSize = 3;
-const int ScenarioTextSize = 30;
-const int ScenarioSelecetX = 350, ScenarioSelectY = 300;
+const int ScenarioTextSize = 44;
+const int ScenarioSelecetX = 600, ScenarioSelectY = 400;
 
 static int ScenarioSelectNum = 0;
 static const int WaitTimeMS = 150;
@@ -27,9 +28,9 @@ static int StartTime = WaitTimeMS * 4;
 
 static int state = 0;
 
-static const int ScenarioTextX = 5, ScenarioTextY = 500;
-static const int ScenarioTriX = 1220, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
-static const int TriWidth = 12, TriHeight = 10;
+static const int ScenarioTextX = 5, ScenarioTextY = 700;
+static const int ScenarioTriX = 1850, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
+static const int TriWidth = 15, TriHeight = 17;
 
 void title_update();
 void scenario_update();
@@ -46,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	SetDrawScreen(DX_SCREEN_BACK);
-	SetGraphMode(1280, 720, 32);
+	SetGraphMode(1920, 1080, 32);
 	font_init();
 
 	while (true) {
@@ -71,10 +72,10 @@ void title_update() {
 		DrawStringToHandle(TitleX, TitleY, TitleText, color_white, TitleHandle);
 		for (int i = 0; i < 3; i++) {
 			if (i == ScenarioSelectNum) {
-				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenariosTexts[i], color_yellow, ScenarioSelectHandle);
+				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenarioTitles[i], color_yellow, ScenarioSelectHandle);
 			}
 			else {
-				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenariosTexts[i], color_white, ScenarioSelectHandle);
+				DrawStringToHandle(ScenarioSelecetX, ScenarioSelectY + ScenarioSelectFontSize * i, ScenarioTitles[i], color_white, ScenarioSelectHandle);
 			}
 		}
 
@@ -127,7 +128,7 @@ void scenario_update() {
 		std::string text{ (*itr)["content"].GetString() };
 		text = UTF8toSjis(text);
 
-		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 1270, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
+		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 1900, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
 		DrawTriangle(ScenarioTriX - TriWidth, ScenarioTriY, ScenarioTriX + TriWidth, ScenarioTriY,
 			ScenarioTriX, ScenarioTriY + TriHeight, color_white, TRUE);
 		DrawStringToHandle(ScenarioTextX, ScenarioTextY, text.c_str(), color_white, ScenarioTextHandle);
@@ -162,7 +163,7 @@ void scenario_update() {
 }
 
 void font_init() {
-	TitleHandle = CreateFontToHandle(NULL, 80, 2);
+	TitleHandle = CreateFontToHandle(NULL, TitleFontSize, 2);
 	ScenarioSelectHandle = CreateFontToHandle(NULL, ScenarioSelectFontSize, 2);
 	ScenarioTextHandle = CreateFontToHandle(NULL, ScenarioTextSize, 2);
 }
