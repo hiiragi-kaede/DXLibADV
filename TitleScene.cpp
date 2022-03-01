@@ -1,5 +1,7 @@
 #include<fstream>
 #include<string>
+#define _USE_MATH_DEFINES
+#include<math.h>
 #include"DxLibColor.hpp"
 #include"Tools.hpp"
 #include "DxLib.h"
@@ -31,6 +33,7 @@ static int state = 0;
 static const int ScenarioTextX = 5, ScenarioTextY = 700;
 static const int ScenarioTriX = 1850, ScenarioTriY = ScenarioTextY - 5 + ScenarioTextSize * 5;
 static const int TriWidth = 15, TriHeight = 17;
+static const int TriAniFrames = 900;
 
 void title_update();
 void scenario_update();
@@ -123,36 +126,44 @@ void scenario_update() {
 	Document doc;
 	doc.ParseStream(isw);
 
-	for (auto itr = doc["contents"].Begin(); itr != doc["contents"].End(); itr++) {
-		ClearDrawScreen();
-		std::string text{ (*itr)["content"].GetString() };
-		text = UTF8toSjis(text);
+	auto itr = doc["contents"].Begin();
+	std::string text{ (*itr)["content"].GetString() };
+	text = UTF8toSjis(text);
 
+	//最初のテキストが選択時の入力によってスキップされないようにする。
+	StartTime = GetNowCount();
+	while (itr != doc["contents"].End()) {
+		ClearDrawScreen();
+		
 		DrawBox(ScenarioTextX - 5, ScenarioTextY - 5, 1900, ScenarioTextY - 5 + ScenarioTextSize * 6, color_white, FALSE);
-		DrawTriangle(ScenarioTriX - TriWidth, ScenarioTriY, ScenarioTriX + TriWidth, ScenarioTriY,
-			ScenarioTriX, ScenarioTriY + TriHeight, color_white, TRUE);
+
+		int tmp = GetNowCount() % TriAniFrames;
+		int TriYOffset = 4 * cos(double(tmp) / TriAniFrames * 2 * M_PI);
+
+		DrawTriangle(ScenarioTriX - TriWidth, ScenarioTriY + TriYOffset,
+					ScenarioTriX + TriWidth, ScenarioTriY + TriYOffset, 
+					ScenarioTriX, ScenarioTriY + TriHeight + TriYOffset, color_white, TRUE);
+
 		DrawStringToHandle(ScenarioTextX, ScenarioTextY, text.c_str(), color_white, ScenarioTextHandle);
 		ScreenFlip();
-		//最初のテキストが選択時の入力によってスキップされないようにする。
-		StartTime = GetNowCount();
 
-		while (true) {
-			if (CheckHitKey(KEY_INPUT_ESCAPE)) {
-				font_finalize();
-				DxLib_End();
-				exit(0);
-			}
+		if (CheckHitKey(KEY_INPUT_ESCAPE)) {
+			font_finalize();
+			DxLib_End();
+			exit(0);
+		}
 
-			if (CheckHitKey(KEY_INPUT_B)) {
-				state = 0;
-				return;
-			}
+		if (CheckHitKey(KEY_INPUT_B)) {
+			state = 0;
+			return;
+		}
 
-			if (GetNowCount() - StartTime > WaitTimeMS) {
-				if (CheckHitKey(KEY_INPUT_SPACE)) {
-					StartTime = GetNowCount();
-					break;
-				}
+		if (GetNowCount() - StartTime > WaitTimeMS) {
+			if (CheckHitKey(KEY_INPUT_SPACE)) {
+				StartTime = GetNowCount();
+				itr++;
+				text = (*itr)["content"].GetString();
+				text = UTF8toSjis(text);
 			}
 		}
 	}
