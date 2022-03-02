@@ -1,3 +1,2 @@
-﻿  TitleScene.cpp
-D:\program\DxLibrary\ADVTest\TitleScene.cpp(141,18): warning C4244: '初期化中': 'double' から 'int' への変換です。データが失われる可能性があります。
+﻿  Main.cpp
   ADVTest.vcxproj -> D:\program\DxLibrary\ADVTest\Debug\ADVTest.exe
