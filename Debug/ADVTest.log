@@ -1,5 +1,5 @@
 ﻿  Game.cpp
-D:\program\DxLibrary\ADVTest\Game.cpp(51,17): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
-D:\program\DxLibrary\ADVTest\Game.cpp(61,15): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
-D:\program\DxLibrary\ADVTest\Game.cpp(78,16): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
+D:\program\DxLibrary\ADVTest\Game.cpp(61,17): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+D:\program\DxLibrary\ADVTest\Game.cpp(71,15): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
+D:\program\DxLibrary\ADVTest\Game.cpp(165,14): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
   ADVTest.vcxproj -> D:\program\DxLibrary\ADVTest\Debug\ADVTest.exe

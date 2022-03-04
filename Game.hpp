@@ -6,3 +6,4 @@ void Game_Update();
 void Game_Draw();
 void Game_SetScenario(int ScenarioNum);
 void Initialize_PartText();
+bool ProgressText();
