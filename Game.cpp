@@ -31,8 +31,10 @@ static int ScenarioSelectNum = 0;
 
 static int AutoTextHandle;
 const int AutoTextSize = 25;
-const int AutoTextX = 1600, AutoTextY = ScenarioTextY - 5 + ScenarioTextSize * 5;
+const int AutoTextX = 1500, AutoTextY = ScenarioTextY - 5 + ScenarioTextSize * 5;
 static bool IsShowFullText = false;
+const int ProgressBarX = AutoTextX + AutoTextSize * 2.5;
+const int ProgressBarY = AutoTextY + 5;
 
 static Document doc;
 static rapidjson::Value *itr;
@@ -122,6 +124,13 @@ void Game_Draw()
 	DrawStringToHandle(ScenarioTextX, ScenarioTextY, PartText.c_str(), color_white, ScenarioTextHandle);
 
 	if (isAuto) {
+		DrawBox(ProgressBarX, ProgressBarY, ProgressBarX + 150, ProgressBarY + 20, color_orange, false);
+		if (IsShowFullText) {
+			double rate = (GetNowCount() - AutoWaitStartTime) / double(AutoWaitTime);
+			if (rate > 1.0) rate = 1.0;
+			DrawBox(ProgressBarX, ProgressBarY, ProgressBarX + 150 * rate, ProgressBarY + 20, color_orange, true);
+		}
+
 		DrawStringToHandle(AutoTextX, AutoTextY, "auto", color_orange, AutoTextHandle);
 	}
 }
