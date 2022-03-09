@@ -1,7 +1,7 @@
 ﻿  Game.cpp
-D:\program\DxLibrary\ADVTest\Game.cpp(36,36): warning C4244: '初期化中': 'double' から 'int' への変換です。データが失われる可能性があります。
-D:\program\DxLibrary\ADVTest\Game.cpp(63,17): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
-D:\program\DxLibrary\ADVTest\Game.cpp(73,15): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
-D:\program\DxLibrary\ADVTest\Game.cpp(131,53): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
-D:\program\DxLibrary\ADVTest\Game.cpp(174,14): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
+D:\program\DxLibrary\ADVTest\Game.cpp(37,36): warning C4244: '初期化中': 'double' から 'int' への変換です。データが失われる可能性があります。
+D:\program\DxLibrary\ADVTest\Game.cpp(65,17): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+D:\program\DxLibrary\ADVTest\Game.cpp(75,15): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
+D:\program\DxLibrary\ADVTest\Game.cpp(133,53): warning C4244: '引数': 'double' から 'int' への変換です。データが失われる可能性があります。
+D:\program\DxLibrary\ADVTest\Game.cpp(179,14): warning C4018: '<=': signed と unsigned の数値を比較しようとしました。
   ADVTest.vcxproj -> D:\program\DxLibrary\ADVTest\Debug\ADVTest.exe

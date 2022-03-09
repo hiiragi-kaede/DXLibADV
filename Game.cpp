@@ -11,6 +11,7 @@
 #include"rapidjson/istreamwrapper.h"
 
 using namespace rapidjson;
+using std::string;
 
 static const int TextShowWaitTime = 100;
 static int TextWaitStartTime = 0;
@@ -41,6 +42,7 @@ static rapidjson::Value *itr;
 static std::string FullText;
 static std::string PartText;
 static int TextPos = 0;
+static int TextIdx = 0;
 
 
 void Game_Initialize()
@@ -61,7 +63,7 @@ void Game_Update()
 {
 	int tmp = GetNowCount() % TriAniFrames;
 	TriYOffset = 4 * cos(double(tmp) / TriAniFrames * 2 * M_PI);
-
+	TextIdx = itr - doc["contents"].Begin() + 1;
 
 	if (CheckHitKey(KEY_INPUT_B)) {
 		SceneMgr_ChangeScene(eScene_Title);
@@ -133,6 +135,9 @@ void Game_Draw()
 
 		DrawStringToHandle(AutoTextX, AutoTextY, "auto", color_orange, AutoTextHandle);
 	}
+
+	string DebugText = std::to_string(TextIdx) + "/" + std::to_string(doc["contents"].Size());
+	DrawStringToHandle(10, 920, DebugText.c_str(), color_white, AutoTextHandle);
 }
 
 void Game_SetScenario(int ScenarioNum)
